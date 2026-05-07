@@ -1,8 +1,8 @@
 # Damage Numbers for Minecraft
-Adds simple damage number particles when any entity takes damage. Compatible with 1.19.4 and 1.20.X. Damage numbers work for any living entity and can be customized or disabled in the mod settings.
+Adds simple damage number particles when any entity takes damage. Compatible with Minecraft 26.1 on Fabric. Damage numbers work for any living entity and can be customized or disabled in the mod settings.
 
 > [!WARNING]  
-> Fork of the original mod, updated to 26.1.2 with small tweaks
+> Fork of the original mod, updated to 26.1.2 (fabric) with small tweaks
 
 ## Screenshots
 ![](https://dl.vixen.link/9d70rt/damagenumbers-banner-static.png)

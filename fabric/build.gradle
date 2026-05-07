@@ -1,45 +1,24 @@
 plugins {
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
-}
-
-architectury {
-    platformSetupLoomIde()
-    fabric()
-}
-
-configurations {
-    common
-    shadowCommon // Don't use shadow from the shadow plugin since it *excludes* files.
-    compileClasspath.extendsFrom common
-    runtimeClasspath.extendsFrom common
-    developmentForge.extendsFrom common
+    id 'net.fabricmc.fabric-loom'
 }
 
 dependencies {
-    modImplementation "net.fabricmc:fabric-loader:${rootProject.loader_version}"
+    minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
 
-    modImplementation "dev.isxander:yet-another-config-lib:${rootProject.yacl_version}"
-    modApi "com.terraformersmc:modmenu:${rootProject.modmenu_version}"
-
-    common(project(path: ":common", configuration: "namedElements")) { transitive false }
-    shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
+    implementation "net.fabricmc:fabric-loader:${rootProject.loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
+    compileOnly "com.terraformersmc:modmenu:${rootProject.modmenu_version}"
+    compileOnly "org.jetbrains:annotations:24.1.0"
 }
 
-shadowJar {
-    exclude 'architectury.common.json'
-
-    configurations = [project.configurations.shadowCommon]
-    archiveClassifier = 'dev-shadow'
-}
-
-remapJar {
-    injectAccessWidener = true
-    input.set shadowJar.archiveFile
-    dependsOn shadowJar
-}
-
-components.java {
-    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
-        skip()
+sourceSets {
+    main {
+        java {
+            srcDir '../common/src/main/java'
+            srcDir '../mixins'
+        }
+        resources {
+            srcDir '../common/src/main/resources'
+        }
     }
 }

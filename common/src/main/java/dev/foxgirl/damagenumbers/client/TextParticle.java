@@ -1,69 +1,76 @@
 package dev.foxgirl.damagenumbers.client;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.ParticleTextureSheet;
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.util.math.Vec3d;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Camera;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix4f;
 
-public final class TextParticle extends Particle {
+public final class TextParticle {
 
-    private String text;
+    private static final int FULL_BRIGHT = 0xF000F0;
 
-    public TextParticle(ClientWorld world, Vec3d pos, Vec3d velocity) {
-        super(world, pos.x, pos.y, pos.z, velocity.x, velocity.y, velocity.z);
-        velocityMultiplier = 0.99F;
-        gravityStrength = 0.75F;
-        maxAge = 32;
+    private Component text = Component.empty();
+
+    private Vec3 previousPos;
+    private Vec3 pos;
+    private Vec3 velocity;
+
+    private Color color = Color.valueOf("#FFFFFFFF");
+
+    private int age;
+    private final int lifetime;
+
+    public TextParticle(@NotNull Vec3 pos, @NotNull Vec3 velocity, int lifetime) {
+        this.previousPos = pos;
+        this.pos = pos;
+        this.velocity = velocity;
+        this.lifetime = Config.clampDisplayTicks(lifetime);
     }
 
     public void setText(@NotNull String text) {
-        this.text = text;
+        this.text = Component.literal(text);
     }
 
     public void setColor(@NotNull Color color) {
-        this.red = color.r();
-        this.green = color.g();
-        this.blue = color.b();
-        this.alpha = color.a();
+        this.color = color;
     }
 
-    @Override
-    public ParticleTextureSheet getType() {
-        return ParticleTextureSheet.CUSTOM;
+    public boolean tick() {
+        previousPos = pos;
+        velocity = velocity.add(0.0, -0.03, 0.0);
+        pos = pos.add(velocity);
+        velocity = velocity.scale(0.99);
+        age++;
+        return age >= lifetime;
     }
 
-    @Override
-    public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
-        var cameraPos = camera.getPos();
+    public void remove() {
+        age = lifetime;
+    }
 
-        float particleX = (float) (prevPosX + (x - prevPosX) * (double) tickDelta - cameraPos.x);
-        float particleY = (float) (prevPosY + (y - prevPosY) * (double) tickDelta - cameraPos.y);
-        float particleZ = (float) (prevPosZ + (z - prevPosZ) * (double) tickDelta - cameraPos.z);
+    public void render(
+        @NotNull PoseStack poseStack,
+        @NotNull SubmitNodeCollector submitNodeCollector,
+        @NotNull Camera camera,
+        @NotNull CameraRenderState cameraRenderState,
+        float tickDelta
+    ) {
+        Vec3 cameraPos = camera.position();
+        Vec3 renderPos = previousPos.lerp(pos, tickDelta).subtract(cameraPos);
 
-        Matrix4f matrix = new Matrix4f();
-        matrix = matrix.translation(particleX, particleY, particleZ);
-        matrix = matrix.rotate(camera.getRotation());
-        matrix = matrix.rotate((float) Math.PI, 0.0F, 1.0F, 0.0F);
-        matrix = matrix.scale(-0.025F, -0.025F, -0.025F);
-
-        var client = MinecraftClient.getInstance();
-
-        var textRenderer = client.textRenderer;
-        var vertexConsumers = client.getBufferBuilders().getEntityVertexConsumers();
-
-        float textX = textRenderer.getWidth(text) / -2.0F;
-        float textY = 0.0F;
-
-        int textColor = new Color(red, green, blue, alpha).getValue();
-
-        textRenderer.draw(text, textX, textY, textColor, false, matrix, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, 0xF000F0);
-        vertexConsumers.draw();
+        submitNodeCollector.submitNameTag(
+            poseStack,
+            renderPos.add(0.0, -0.5, 0.0),
+            0,
+            text,
+            true,
+            FULL_BRIGHT,
+            renderPos.lengthSqr(),
+            cameraRenderState
+        );
     }
 
 }

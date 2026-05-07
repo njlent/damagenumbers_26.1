@@ -19,6 +19,8 @@ public final class Config {
 
     public boolean isPlayerDamageShown = false;
 
+    public int displayTicks = 40;
+
     public Color colorSm = Color.valueOf("#FFAA00");
     public Color colorMd = Color.valueOf("#FF0000");
     public Color colorLg = Color.valueOf("#AA0000");
@@ -71,6 +73,7 @@ public final class Config {
         var json = new JsonObject();
         json.addProperty("isEnabled", isEnabled);
         json.addProperty("isPlayerDamageShown", isPlayerDamageShown);
+        json.addProperty("displayTicks", displayTicks);
         json.addProperty("colorSm", colorSm.toString());
         json.addProperty("colorMd", colorMd.toString());
         json.addProperty("colorLg", colorLg.toString());
@@ -82,11 +85,16 @@ public final class Config {
             switch (entry.getKey()) {
                 case "isEnabled" -> isEnabled = entry.getValue().getAsBoolean();
                 case "isPlayerDamageShown" -> isPlayerDamageShown = entry.getValue().getAsBoolean();
+                case "displayTicks" -> displayTicks = clampDisplayTicks(entry.getValue().getAsInt());
                 case "colorSm" -> colorSm = Color.valueOf(entry.getValue().getAsString());
                 case "colorMd" -> colorMd = Color.valueOf(entry.getValue().getAsString());
                 case "colorLg" -> colorLg = Color.valueOf(entry.getValue().getAsString());
             }
         });
+    }
+
+    public static int clampDisplayTicks(int ticks) {
+        return Math.max(5, Math.min(ticks, 200));
     }
 
     public interface PathProvider {

@@ -1,7 +1,7 @@
 package dev.foxgirl.damagenumbers.mixin;
 
 import dev.foxgirl.damagenumbers.DamageNumbers;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -18,8 +18,8 @@ public abstract class MixinLivingEntity {
     private void injected$tick(CallbackInfo info) {
         var entity = (LivingEntity) (Object) this;
 
-        var world = entity.getWorld();
-        if (world == null || !world.isClient()) return;
+        var world = entity.level();
+        if (world == null || !world.isClientSide()) return;
 
         float oldHealth = previousHealth;
         float newHealth = entity.getHealth();

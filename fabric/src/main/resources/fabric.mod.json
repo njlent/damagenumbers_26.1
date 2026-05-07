@@ -5,12 +5,10 @@
     "version": "${version}",
 
     "depends": {
-        "java": ">=21",
-        "minecraft": ">=1.21",
-        "fabricloader": ">=0.14.0"
-    },
-    "recommends": {
-        "yet_another_config_lib_v3": "*"
+        "java": ">=25",
+        "minecraft": "~26.1",
+        "fabricloader": ">=0.19.2",
+        "fabric-api": "*"
     },
 
     "name": "Damage Numbers",

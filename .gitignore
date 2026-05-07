@@ -4,9 +4,12 @@
 .settings
 .project
 .classpath
-gradle
-gradlew
-gradlew*
+gradle/*
+!gradle/wrapper/
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+!gradlew
+!gradlew.bat
 bin
 run
 build
