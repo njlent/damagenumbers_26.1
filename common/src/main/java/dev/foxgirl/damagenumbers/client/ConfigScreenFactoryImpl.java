@@ -38,6 +38,7 @@ public final class ConfigScreenFactoryImpl implements ConfigScreenFactory {
         private EditBox colorSm;
         private EditBox colorMd;
         private EditBox colorLg;
+        private EditBox colorCrit;
 
         private ConfigScreen(@NotNull Screen parent, @NotNull Config config, @NotNull Config.PathProvider paths) {
             super(Component.literal("Damage Numbers"));
@@ -62,6 +63,12 @@ public final class ConfigScreenFactoryImpl implements ConfigScreenFactory {
                 config.isPlayerDamageShown = !config.isPlayerDamageShown;
                 button.setMessage(toggleLabel("Player Damage", () -> config.isPlayerDamageShown));
             }).bounds(left, y, 240, 20).build());
+            y += 26;
+
+            addRenderableWidget(Button.builder(toggleLabel("Custom Colors", () -> config.useCustomColors), button -> {
+                config.useCustomColors = !config.useCustomColors;
+                button.setMessage(toggleLabel("Custom Colors", () -> config.useCustomColors));
+            }).bounds(left, y, 240, 20).build());
             y += 32;
 
             displayTicks = addTextField(left, y, String.valueOf(config.displayTicks), 4);
@@ -71,6 +78,8 @@ public final class ConfigScreenFactoryImpl implements ConfigScreenFactory {
             colorMd = addColorField(left, y, "Medium", config.colorMd);
             y += 26;
             colorLg = addColorField(left, y, "Large", config.colorLg);
+            y += 26;
+            colorCrit = addColorField(left, y, "Over 15", config.colorCrit);
             y += 34;
 
             addRenderableWidget(Button.builder(Component.literal("Done"), button -> onClose())
@@ -94,10 +103,11 @@ public final class ConfigScreenFactoryImpl implements ConfigScreenFactory {
             super.extractRenderState(graphics, mouseX, mouseY, delta);
             int left = width / 2 - 120;
             graphics.centeredText(font, title, width / 2, 24, 0xFFFFFF);
-            graphics.text(font, "Ticks", left, 110, 0xA0A0A0);
-            graphics.text(font, "Small", left, 136, 0xA0A0A0);
-            graphics.text(font, "Medium", left, 162, 0xA0A0A0);
-            graphics.text(font, "Large", left, 188, 0xA0A0A0);
+            graphics.text(font, "Ticks", left, 136, 0xA0A0A0);
+            graphics.text(font, "Small", left, 162, 0xA0A0A0);
+            graphics.text(font, "Medium", left, 188, 0xA0A0A0);
+            graphics.text(font, "Large", left, 214, 0xA0A0A0);
+            graphics.text(font, "Over 15", left, 240, 0xA0A0A0);
         }
 
         @Override
@@ -114,6 +124,7 @@ public final class ConfigScreenFactoryImpl implements ConfigScreenFactory {
             config.colorSm = parseColor(colorSm, config.colorSm);
             config.colorMd = parseColor(colorMd, config.colorMd);
             config.colorLg = parseColor(colorLg, config.colorLg);
+            config.colorCrit = parseColor(colorCrit, config.colorCrit);
         }
 
         private static @NotNull Color parseColor(@NotNull EditBox editBox, @NotNull Color fallback) {

@@ -18,12 +18,14 @@ public final class Config {
     public boolean isEnabled = true;
 
     public boolean isPlayerDamageShown = false;
+    public boolean useCustomColors = true;
 
     public int displayTicks = 40;
 
     public Color colorSm = Color.valueOf("#FFAA00");
     public Color colorMd = Color.valueOf("#FF0000");
     public Color colorLg = Color.valueOf("#AA0000");
+    public Color colorCrit = Color.valueOf("#FF40FF");
 
     public Config() {}
 
@@ -73,10 +75,12 @@ public final class Config {
         var json = new JsonObject();
         json.addProperty("isEnabled", isEnabled);
         json.addProperty("isPlayerDamageShown", isPlayerDamageShown);
+        json.addProperty("useCustomColors", useCustomColors);
         json.addProperty("displayTicks", displayTicks);
         json.addProperty("colorSm", colorSm.toString());
         json.addProperty("colorMd", colorMd.toString());
         json.addProperty("colorLg", colorLg.toString());
+        json.addProperty("colorCrit", colorCrit.toString());
         return GSON.toJson(json);
     }
 
@@ -85,10 +89,12 @@ public final class Config {
             switch (entry.getKey()) {
                 case "isEnabled" -> isEnabled = entry.getValue().getAsBoolean();
                 case "isPlayerDamageShown" -> isPlayerDamageShown = entry.getValue().getAsBoolean();
+                case "useCustomColors" -> useCustomColors = entry.getValue().getAsBoolean();
                 case "displayTicks" -> displayTicks = clampDisplayTicks(entry.getValue().getAsInt());
                 case "colorSm" -> colorSm = Color.valueOf(entry.getValue().getAsString());
                 case "colorMd" -> colorMd = Color.valueOf(entry.getValue().getAsString());
                 case "colorLg" -> colorLg = Color.valueOf(entry.getValue().getAsString());
+                case "colorCrit" -> colorCrit = Color.valueOf(entry.getValue().getAsString());
             }
         });
     }

@@ -2,9 +2,11 @@ package dev.foxgirl.damagenumbers.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,7 +14,7 @@ public final class TextParticle {
 
     private static final int FULL_BRIGHT = 0xF000F0;
 
-    private Component text = Component.empty();
+    private String text = "";
 
     private Vec3 previousPos;
     private Vec3 pos;
@@ -31,7 +33,7 @@ public final class TextParticle {
     }
 
     public void setText(@NotNull String text) {
-        this.text = Component.literal(text);
+        this.text = text;
     }
 
     public void setColor(@NotNull Color color) {
@@ -52,6 +54,7 @@ public final class TextParticle {
     }
 
     public void render(
+        @NotNull Font font,
         @NotNull PoseStack poseStack,
         @NotNull SubmitNodeCollector submitNodeCollector,
         @NotNull Camera camera,
@@ -61,16 +64,25 @@ public final class TextParticle {
         Vec3 cameraPos = camera.position();
         Vec3 renderPos = previousPos.lerp(pos, tickDelta).subtract(cameraPos);
 
-        submitNodeCollector.submitNameTag(
+        poseStack.pushPose();
+        poseStack.translate(renderPos.x, renderPos.y, renderPos.z);
+        poseStack.mulPose(cameraRenderState.orientation);
+        poseStack.scale(0.025F, -0.025F, 0.025F);
+
+        submitNodeCollector.submitText(
             poseStack,
-            renderPos.add(0.0, -0.5, 0.0),
-            0,
-            text,
-            true,
+            font.width(text) / -2.0F,
+            0.0F,
+            FormattedCharSequence.forward(text, Style.EMPTY),
+            false,
+            Font.DisplayMode.NORMAL,
             FULL_BRIGHT,
-            renderPos.lengthSqr(),
-            cameraRenderState
+            color.getValue(),
+            0,
+            0
         );
+
+        poseStack.popPose();
     }
 
 }
