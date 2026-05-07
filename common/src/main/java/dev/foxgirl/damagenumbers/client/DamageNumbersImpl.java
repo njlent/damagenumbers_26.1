@@ -14,6 +14,8 @@ import java.util.Deque;
 
 public final class DamageNumbersImpl implements DamageNumbersHandler, Config.PathProvider {
 
+    private static final @NotNull Color DEFAULT_COLOR = Color.valueOf("#FFFFFFFF");
+
     public final @NotNull Config config = new Config();
     public final @NotNull Config configDefault = new Config();
 
@@ -111,19 +113,18 @@ public final class DamageNumbersImpl implements DamageNumbersHandler, Config.Pat
 
         particle.setText(text);
 
-        var colorSm = config.useCustomColors ? config.colorSm : configDefault.colorSm;
-        var colorMd = config.useCustomColors ? config.colorMd : configDefault.colorMd;
-        var colorLg = config.useCustomColors ? config.colorLg : configDefault.colorLg;
-        var colorCrit = config.useCustomColors ? config.colorCrit : configDefault.colorLg;
-
-        if (damage > 15.0F) {
-            particle.setColor(colorCrit);
-        } else if (damage >= 8.0F) {
-            particle.setColor(Color.lerp(colorMd, colorLg, (damage - 8.0F) / 8.0F));
-        } else if (damage >= 2.0F) {
-            particle.setColor(Color.lerp(colorSm, colorMd, (damage - 2.0F) / 6.0F));
+        if (config.useCustomColors) {
+            if (damage > 15.0F) {
+                particle.setColor(config.colorCrit);
+            } else if (damage >= 8.0F) {
+                particle.setColor(Color.lerp(config.colorMd, config.colorLg, (damage - 8.0F) / 8.0F));
+            } else if (damage >= 2.0F) {
+                particle.setColor(Color.lerp(config.colorSm, config.colorMd, (damage - 2.0F) / 6.0F));
+            } else {
+                particle.setColor(config.colorSm);
+            }
         } else {
-            particle.setColor(colorSm);
+            particle.setColor(DEFAULT_COLOR);
         }
 
         particles.add(particle);

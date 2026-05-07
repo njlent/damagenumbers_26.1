@@ -75,7 +75,7 @@ public final class TextParticle {
             0.0F,
             FormattedCharSequence.forward(text, Style.EMPTY),
             false,
-            Font.DisplayMode.NORMAL,
+            Font.DisplayMode.SEE_THROUGH,
             FULL_BRIGHT,
             color.getValue(),
             0,
